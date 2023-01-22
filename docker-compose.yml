@@ -7,9 +7,9 @@ services:
   database:
     container_name: database
     image: mureevms/mutillidae:database
-    build:
-        context: ./database
-        dockerfile: Dockerfile
+#     build:
+#         context: ./database
+#         dockerfile: Dockerfile
     ports:
       - 3306:3306
     networks:
@@ -34,9 +34,9 @@ services:
       - database
       - directory
     image: mureevms/mutillidae:www
-    build:
-        context: ./www
-        dockerfile: Dockerfile
+#     build:
+#         context: ./www
+#         dockerfile: Dockerfile
     ports:
       - 127.0.0.1:80:80
       - 127.0.0.1:443:443
@@ -47,9 +47,9 @@ services:
   directory:
     container_name: directory
     image: mureevms/mutillidae:ldap
-    build:
-        context: ./ldap
-        dockerfile: Dockerfile
+#     build:
+#         context: ./ldap
+#         dockerfile: Dockerfile
     volumes:
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
@@ -63,9 +63,9 @@ services:
     depends_on:
       - directory
     image: mureevms/mutillidae:ldap_admin
-    build:
-        context: ./ldap_admin
-        dockerfile: Dockerfile
+#     build:
+#         context: ./ldap_admin
+#         dockerfile: Dockerfile
     ports:
       - 127.0.0.1:82:80
     networks:
