@@ -6,37 +6,39 @@ services:
 
   database:
     container_name: database
-    image: mureevms/mutillidae:database
-#     build:
-#         context: ./database
-#         dockerfile: Dockerfile
+    image: mysql:8.0.32
+    environment:
+      - MYSQL_ROOT_PASSWORD=mutillidae
+      - MYSQL_DATABASE=mutillidae
     ports:
       - 3306:3306
     networks:
       - datanet
 
-  database_admin:
-    container_name: database_admin
+  phpmyadmin:
+    container_name: phpmyadmin
     depends_on:
       - database
-    image: mureevms/mutillidae:database_admin
-#     build:
-#         context: ./database_admin
-#         dockerfile: Dockerfile
+    image: phpmyadmin:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=mutillidae
+      - PMA_HOST=database
+      - PMA_USER=root
+      - PMA_PASSWORD=mutillidae
     ports:
       - 127.0.0.1:81:80
     networks:
       - datanet
 
-  www:
-    container_name: www
+  apache:
+    container_name: apache
     depends_on:
       - database
-      - directory
-    image: mureevms/mutillidae:www
-#     build:
-#         context: ./www
-#         dockerfile: Dockerfile
+      - ldap
+    image: mureevms/mutillidae:apache
+    build:
+        context: ./apache
+        dockerfile: Dockerfile
     ports:
       - 127.0.0.1:80:80
       - 127.0.0.1:443:443
@@ -44,28 +46,32 @@ services:
       - datanet
       - ldapnet
 
-  directory:
-    container_name: directory
-    image: mureevms/mutillidae:ldap
-#     build:
-#         context: ./ldap
-#         dockerfile: Dockerfile
+  ldap:
+    container_name: ldap
+    image: osixia/openldap:latest
     volumes:
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
+    environment:
+      - LDAP_ORGANISATION=Mutillidae Inc
+      - LDAP_DOMAIN=mutillidae.localhost
+      - LDAP_BASE_DN=dc=mutillidae,dc=localhost
+      - LDAP_ADMIN_PASSWORD=mutillidae
+      - LDAP_CONFIG_PASSWORD=mutillidae
+      - LDAP_TLS=false
     ports:
       - 127.0.0.1:389:389
     networks:
       - ldapnet
 
-  directory_admin:
-    container_name: directory_admin
+  ldap_admin:
+    container_name: ldap_admin
     depends_on:
-      - directory
-    image: mureevms/mutillidae:ldap_admin
-#     build:
-#         context: ./ldap_admin
-#         dockerfile: Dockerfile
+      - ldap
+    image: osixia/phpldapadmin:latest
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=directory
+      - PHPLDAPADMIN_HTTPS=false
     ports:
       - 127.0.0.1:82:80
     networks:
