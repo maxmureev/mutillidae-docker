@@ -11,7 +11,7 @@ services:
       - MYSQL_ROOT_PASSWORD=mutillidae
       - MYSQL_DATABASE=mutillidae
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
     networks:
       - datanet
 
@@ -36,9 +36,9 @@ services:
       - database
       - ldap
     image: mureevms/mutillidae:apache
-    build:
-        context: ./apache
-        dockerfile: Dockerfile
+    # build:
+    #     context: ./apache
+    #     dockerfile: Dockerfile
     ports:
       - 127.0.0.1:80:80
       - 127.0.0.1:443:443
